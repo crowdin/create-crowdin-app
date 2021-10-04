@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+<div class="i_w">
+    <div class='top'>
+        <crowdin-button icon-before="account_circle" onclick="integrationLogout()">Log out</crowdin-button>
+    </div>
+    <crowdin-simple-integration integration-name="{{name}}" integration-logo="assets/logo.png">
+    </crowdin-simple-integration>
+</div>
+<crowdin-toasts></crowdin-toasts>
+</body>
+<script type="text/javascript">
+
+    document.body.addEventListener('refreshFilesList', (e) => {
+        if (e.detail.refreshIntegration) {
+            getIntegrationData();
+        } else if (e.detail.refreshCrowdin) {
+            getCrowdinData();
+        }
+    });
+    document.body.addEventListener('crowdinFilesFolderToggled', (event) => {
+        if (event.detail.componentId === 'crowdin-files' && event.detail.isOpen && event.detail.type === '1') {
+            getFileProgress(event.detail.id);
+        }
+    });
+    document.body.addEventListener('uploadFilesToCrowdin', uploadFilesToCrowdin);
+    document.body.addEventListener('uploadFilesToIntegration', uploadFilesToIntegration);
+
+    const appComponent = document.querySelector('crowdin-simple-integration');
+
+    const folderType = '0';
+    const fileType = '1';
+
+    let project = {};
+    let files = [];
+    let integrationData = [];
+
+    getCrowdinData();
+    getIntegrationData();
+
+    function integrationLogout() {
+        checkOrigin()
+                .then(queryParams => fetch(`api/logout${queryParams}`, {method: 'POST'}))
+                .then(checkResponse)
+                .then(reloadLocation)
+                .catch(e => catchRejection(e, 'Looks like you are not logged in'));
+    }
+
+    function getCrowdinData() {
+        appComponent.setAttribute('is-crowdin-loading', true);
+        checkOrigin()
+                .then(restParams => fetch('api/crowdin/files' + restParams))
+                .then(checkResponse)
+                .then((res) => {
+                    files = res;
+                    const tree = [];
+                    tree.push({
+                        parent_id: '0',
+                        name: 'Crowdin',
+                        id: 'Crowdin',
+                        node_type: folderType
+                    });
+                    files.forEach(f => tree.push({
+                        parent_id: 'Crowdin',
+                        name: f.title || f.name,
+                        id: f.id,
+                        node_type: fileType,
+                        type: f.type
+                    }));
+                    appComponent.setCrowdinFilesData(tree);
+                    return checkOrigin();
+                })
+                .then(restParams => fetch('api/crowdin/project' + restParams))
+                .then(checkResponse)
+                .then((res) => {
+                    project = res;
+                    appComponent.setCrowdinLanguagesData(project.targetLanguages)
+                })
+                .catch(e => catchRejection(e, 'Can\'t fetch Crowdin data'))
+                .finally(() => (appComponent.setAttribute('is-crowdin-loading', false)));
+    }
+
+    function getIntegrationData() {
+        appComponent.setAttribute('is-integration-loading', true);
+        checkOrigin()
+                .then(restParams => fetch('api/integration/data' + restParams))
+                .then(checkResponse)
+                .then((res) => {
+                    integrationData = res;
+                    const tree = [];
+                    tree.push({
+                        parent_id: '0',
+                        name: 'Integration',
+                        id: 'Integration',
+                        node_type: folderType
+                    });
+                    files.forEach(f => tree.push({
+                        parent_id: 'Integration',
+                        name: f.name,
+                        id: f.id,
+                        node_type: fileType,
+                        type: f.type
+                    }));
+                    appComponent.setIntegrationFilesData(tree);
+                })
+                .catch(e => catchRejection(e, 'Can\'t fetch {{name}} templates'))
+                .finally(() => (appComponent.setAttribute('is-integration-loading', false)));
+    }
+
+    function getFileProgress(fileId) {
+        checkOrigin()
+                .then(restParams => fetch(`api/crowdin/file-progress/${fileId}` + restParams))
+                .then(checkResponse)
+                .then((res) => (appComponent.addCrowdinFileProgress(res)))
+                .catch(e => catchRejection(e, 'Can\'t fetch file progress'));
+    }
+
+    function uploadFilesToCrowdin(e) {
+        if (e.detail.length === 0) {
+            showToast('Select templates which will be pushed to Crowdin');
+            return;
+        }
+        appComponent.setAttribute('is-to-crowdin-process', true);
+        checkOrigin()
+                .then(restParams => fetch('api/crowdin/update' + restParams, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(e.detail)
+                }))
+                .then(checkResponse)
+                .then(() => showToast(`File${detail.length > 1 ? 's' : ''} imported successfully`))
+                .then(getCrowdinData)
+                .catch(e => catchRejection(e, 'Can\'t upload templates to Crowdin'))
+                .finally(() => (appComponent.setAttribute('is-to-crowdin-process', false)));
+    }
+
+    function uploadFilesToIntegration(e) {
+        if (Object.keys(e.detail).length === 0) {
+            showToast('Select files which will be uploaded to {{name}}');
+            return;
+        }
+        appComponent.setAttribute('is-to-integration-process', true);
+        checkOrigin()
+                .then(restParams => fetch('api/integration/update' + restParams, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(e.detail)
+                }))
+                .then(checkResponse)
+                .then(() => showToast(`File${Object.keys(e.detail).length > 1 ? 's' : ''} exported successfully`))
+                .catch(e => catchRejection(e, 'Can\'t upload files to {{name}}'))
+                .finally(() => (appComponent.setAttribute('is-to-integration-process', false)));
+    }
+</script>
+</html>
