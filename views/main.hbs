@@ -96,7 +96,7 @@
                         id: 'Integration',
                         node_type: folderType
                     });
-                    files.forEach(f => tree.push({
+                    integrationData.forEach(f => tree.push({
                         parent_id: 'Integration',
                         name: f.name,
                         id: f.id,
@@ -130,7 +130,7 @@
                     body: JSON.stringify(e.detail)
                 }))
                 .then(checkResponse)
-                .then(() => showToast(`File${detail.length > 1 ? 's' : ''} imported successfully`))
+                .then(() => showToast(`File${e.detail.length > 1 ? 's' : ''} imported successfully`))
                 .then(getCrowdinData)
                 .catch(e => catchRejection(e, 'Can\'t upload templates to Crowdin'))
                 .finally(() => (appComponent.setAttribute('is-to-crowdin-process', false)));

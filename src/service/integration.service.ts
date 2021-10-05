@@ -61,7 +61,7 @@ export class IntegrationService {
       this.crowdinRootFolder,
     );
     const fileContent = {
-      key: 'value',
+      title: 'Hello World',
     };
     await updateOrCreateFile(
       crowdinClient,
@@ -70,7 +70,7 @@ export class IntegrationService {
       'Sample file from integration',
       FileType.JSON,
       folder.id,
-      JSON.stringify(fileContent),
+      fileContent,
       files.find((f) => f.name === 'integration.json'),
     );
   }
@@ -103,7 +103,7 @@ export class IntegrationService {
         return;
       }
       const response = (await axios.get(translationsLink.data.url)) as any;
-      console.log(response);
+      console.log(response.data);
     }
   }
 }
