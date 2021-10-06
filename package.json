@@ -32,8 +32,7 @@
     "hbs": "^4.1.2",
     "sqlite3": "^5.0.2",
     "typeorm": "^0.2.36",
-    "@crowdin/crowdin-api-client": "1.12.1",
-    "@crowdin/crowdin-apps-functions": "file:../crowdin-apps-functions"
+    "@crowdin/crowdin-apps-functions": "0.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",
