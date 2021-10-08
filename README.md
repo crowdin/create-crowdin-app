@@ -12,7 +12,7 @@ Create Crowdin App with all common logic that allows you to quickly develop your
 Then you will receive client id and client secret for your app which will be used for deployment.
 
 ## Launch the App
-Once you have client id and secret you also need to have url where your app will publicly accessible from the internet.
+Once you have client id and secret you also need to have url where your app will be publicly accessible from the internet.
 
 For development purposes you can use [ngrok](https://ngrok.com/).
 
@@ -60,12 +60,13 @@ After this command you should be able to get your app manifest `https://123-456.
 
 ## Technical details
 
-Project is written by using [NestJS framework](https://nestjs.com/) so in case you haven't worked with it yet, please check it out.
+Project is written by using [NestJS framework](https://nestjs.com/) so in case you haven't worked with it yet, please check it out.  
 [SQLite](https://www.sqlite.org/) is used to persist users credentials for Crowdin and integration APIs.
+For App UI [Crowdin UI Kit](https://crowdin-web-components.s3.amazonaws.com/index.html) is used.
 
-This sample App shows example of integration with other service where authentication is done via `apiToken` which will be added to every request.
-If this fits your use case then you will only need to implement your logic in `IntegrationService`.
-Otherwise, you will need to review and rework logic how credentials for integration are stored (`IntegrationCredentialsService` and dao layer as well) and how end points are protected (`IntegrationContextGuard` and `IntegrationApiKey`).
+This sample App shows example of integration with other service where authentication is done via `apiToken` which will be added to every request.  
+If this fits your use case then you will only need to implement your logic in `IntegrationService`.  
+Otherwise, you will need to review and rework logic how credentials for integration are stored (`IntegrationCredentialsService` and dao layer as well) and how end points are protected (`IntegrationContextGuard` and `IntegrationApiKey`).  
 
 ## Contributing
 If you want to contribute please read the [Contributing](/CONTRIBUTING.md) guidelines.
