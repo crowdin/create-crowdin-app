@@ -1,0 +1,43 @@
+.i_w {
+    padding: 16px 24px;
+    max-width: 1420px;
+    margin: 0 auto;
+}
+
+.center {
+    text-align: center;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.top {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.login {
+    margin-bottom: 10px;
+}
+
+.login img {
+    max-width: 70px;
+    max-height: 70px;
+    width: auto;
+    height: auto;
+}
+
+.login crowdin-input {
+    margin-bottom: 8px;
+    display: block;
+}
+
+.login .inputs {
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.login crowdin-h4 {
+    margin: 8px 0 16px;
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> head}}
+<body>
+<div class="i_w center">
+    <div>
+        <crowdin-card is-shadowed is-padding-lg class="login">
+            <img alt='{{ name }} logo' src='assets/logo.png'/>
+            <crowdin-h4 id="integration-name">{{ name }}</crowdin-h4>
+            <div class="inputs">
+                <crowdin-input id="apikey" label="{{ name }} API Key"
+                               help-text="You need to create standard api key" value=""></crowdin-input>
+            </div>
+            <crowdin-button
+                    outlined
+                    icon-after="arrow_forward"
+                    onclick="integrationLogin()"
+            >
+                Log In With {{ name }}
+            </crowdin-button>
+        </crowdin-card>
+    </div>
+</div>
+<crowdin-toasts></crowdin-toasts>
+</body>
+<script type="text/javascript">
+    function integrationLogin() {
+        const req = {
+            apiKey: document.querySelector('#apikey').getAttribute('value')
+        };
+        checkOrigin()
+                .then(queryParams =>
+                        fetch(`api/login${queryParams}`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(req)
+                        })
+                )
+                .then(checkResponse)
+                .then(reloadLocation)
+                .catch(e => catchRejection(e, 'Api key is not stored'));
+    }
+</script>
+</html>
